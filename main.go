@@ -1,9 +1,12 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/1nvers/go-broiler/initializers"
 	"os"
+
+	"github.com/1nvers/go-broiler/controllers"
+	"github.com/1nvers/go-broiler/initializers"
+	"github.com/1nvers/go-broiler/middleware"
+	"github.com/gin-gonic/gin"
 )
 
 func init(){
@@ -14,11 +17,9 @@ func init(){
 
 func main(){
 	r := gin.Default()
-	r.GET("/test",func (c *gin.Context)  {
-		c.JSON(200,gin.H{
-			"test":"success",
-		})
-	})
+	r.POST("/signup",controllers.Signup)
+	r.POST("/login",controllers.Login)
+	r.GET("validate",middleware.ReuqireAuth, controllers.Validate)
 	port := os.Getenv("PORT")
 	r.Run(":"+port)
 }
