@@ -1,14 +1,13 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
-	"os"
-	"time"
 
-	"github.com/1nvers/go-broiler/initializers"
-	"github.com/1nvers/go-broiler/models"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/oneaushaf/go-broiler/database"
+	"github.com/oneaushaf/go-broiler/helpers"
+	"github.com/oneaushaf/go-broiler/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,6 +17,7 @@ func Signup(c *gin.Context){
 		LastName     string
 		Phone		 string
 		Email 	     string
+		UserType 	 string
 		Password     string
 	}
 
@@ -28,30 +28,38 @@ func Signup(c *gin.Context){
 		return
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password),10)
+	err := CreateUser(body.FirstName,body.LastName,body.Phone,body.Email,body.UserType,body.Password)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest,gin.H{
-			"error" : "Failed to hash password",
-		})
-		return 
-	}
-
-	user := models.User{
-		FirstName: body.FirstName, 
-		LastName: body.LastName, 
-		Email: body.Email, 
-		Password: string(hash)}
-	result := initializers.DB.Create(&user)
-
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest,gin.H{
-			"error" : "Failed to create user",
+			"error" : err.Error(),
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{})
+}
+
+func CreateUser(firstName string, lastName string, phone string, email string, userType string, password string)error{
+	hash, err := bcrypt.GenerateFromPassword([]byte(password),10)
+
+	if err != nil {
+		return errors.New("failed to hash password")
+	}
+
+	user := models.User{
+		FirstName: firstName, 
+		LastName: lastName, 
+		Email: email,
+		UserType: userType, 
+		Password: string(hash)}
+
+	result := database.DB.Create(&user)
+
+	if result.Error != nil {
+		return errors.New("failed to create user")
+	}
+	return nil
 }
 
 func Login(c *gin.Context){
@@ -67,30 +75,16 @@ func Login(c *gin.Context){
 		return
 	}
 
-	var user models.User
-	initializers.DB.First(&user, "email = ?", body.Email)
+	user, err := helpers.CheckCredentials(body.Email,body.Password)
 
-	if user.ID == 0 {
+	if err!=nil {
 		c.JSON(http.StatusBadRequest,gin.H{
 			"error":"Invalid email or password",
 		})
 		return
 	}
 
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password),[]byte(body.Password))
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest,gin.H{
-			"error":"Invalid email or password",
-		})
-		return
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256,jwt.MapClaims{
-		"sub":user.ID,
-		"exp":time.Now().Add(time.Hour*24*30).Unix(),
-	})
-
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	tokenString, err := helpers.GenerateTokens(user)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

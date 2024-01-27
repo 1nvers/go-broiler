@@ -6,10 +6,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/1nvers/go-broiler/initializers"
-	"github.com/1nvers/go-broiler/models"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/oneaushaf/go-broiler/database"
+	"github.com/oneaushaf/go-broiler/models"
 )	
 
 func ReuqireAuth(c *gin.Context)  {
@@ -38,7 +38,7 @@ func ReuqireAuth(c *gin.Context)  {
 			c.AbortWithStatus(http.StatusUnauthorized)
 		}
 		var user models.User
-		initializers.DB.First(&user,claims["sub"])
+		database.DB.First(&user,claims["sub"])
 		
 		if user.ID == 0 {
 			c.AbortWithStatus(http.StatusUnauthorized)

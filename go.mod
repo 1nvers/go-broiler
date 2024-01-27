@@ -1,4 +1,4 @@
-module github.com/1nvers/go-broiler
+module github.com/oneaushaf/go-broiler
 
 go 1.21.4
 
