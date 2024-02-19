@@ -7,6 +7,7 @@ import (
 type Batch struct {
 	gorm.Model
 	Count	  uint
+	Died	  uint
 	Adress 	  string  	
-	Ranches   []Ranch
+	RanchID	  uint
 }

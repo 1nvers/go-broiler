@@ -6,7 +6,8 @@ import (
 
 type Weighing struct {
 	gorm.Model
-	Code 	  string   `gorm:"unique;not null"`	
-	Adress 	  string  	
-	Ranches   []Ranch
+	Image   	  string
+	Age           uint
+	BatchID       uint
+	AverageWeight float64 `gorm:"type:DOUBLE"`
 }

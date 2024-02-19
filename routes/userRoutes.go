@@ -1,12 +1,13 @@
 package routes
 
 import (
-	"github.com/oneaushaf/go-broiler/controllers"
 	"github.com/gin-gonic/gin"
+	"github.com/oneaushaf/go-broiler/controllers"
+	"github.com/oneaushaf/go-broiler/middleware"
 )
 
-func UserRoutes(r *gin.Engine){
-	authGroup := r.Group("/user")
-	authGroup.POST("/",controllers.Signup)
-	authGroup.POST("/login",controllers.Login)
+func UserRoutes(r *gin.Engine) {
+	r.GET("user/auth",middleware.ReuqireAuth, controllers.GetAuth)
+	r.GET("user/:id",middleware.ReuqireAuth, controllers.GetUser)
+	r.GET("/users",middleware.ReuqireAuth, controllers.GetUsers)
 }

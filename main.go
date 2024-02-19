@@ -4,10 +4,8 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/oneaushaf/go-broiler/controllers"
 	"github.com/oneaushaf/go-broiler/database"
 	"github.com/oneaushaf/go-broiler/initializers"
-	"github.com/oneaushaf/go-broiler/middleware"
 	"github.com/oneaushaf/go-broiler/routes"
 )
 
@@ -20,7 +18,7 @@ func init(){
 func main(){
 	r := gin.Default()
 	routes.AuthRoutes(r)
-	r.GET("validate",middleware.ReuqireAuth, controllers.Validate)
+	routes.UserRoutes(r)
 	port := os.Getenv("PORT")
 	r.Run(":"+port)
 }
