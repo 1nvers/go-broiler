@@ -17,8 +17,11 @@ func init(){
 
 func main(){
 	r := gin.Default()
+
 	routes.AuthRoutes(r)
 	routes.UserRoutes(r)
+	routes.Farmroutes(r)
+
 	port := os.Getenv("PORT")
 	r.Run(":"+port)
 }

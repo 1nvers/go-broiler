@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/oneaushaf/go-broiler/database"
-	"github.com/oneaushaf/go-broiler/helpers"
 	"github.com/oneaushaf/go-broiler/models"
+	"github.com/oneaushaf/go-broiler/resources"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -49,9 +49,8 @@ func GetAuth(c *gin.Context) {
 	} else if check.RowsAffected == 0 {
 		c.AbortWithStatus(http.StatusNotFound)
 	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"user": helpers.DefaultUserResource(user),
+		"user": resources.UserDefaultResource(user),
 	})
 }
 func GetUser(c *gin.Context) {
@@ -68,15 +67,14 @@ func GetUser(c *gin.Context) {
 	} else if check.RowsAffected == 0 {
 		c.AbortWithStatus(http.StatusNotFound)
 	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"user": helpers.DefaultUserResource(user),
+		"user": resources.UserDefaultResource(user),
 	})
 }
 
 func GetUsers(c *gin.Context) {
 	var users []models.User
-	var result []helpers.UserResource
+	var result []resources.UserResource
 
 	check := database.DB.Find(&users)
 	if check.Error != nil {
@@ -85,80 +83,9 @@ func GetUsers(c *gin.Context) {
 		c.AbortWithStatus(http.StatusNotFound)
 	}
 	for _, user := range users {
-		result = append(result, helpers.DefaultUserResource(user))
+		result = append(result, resources.UserDefaultResource(user))
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"users": result,
-	})
-}
-
-// func Signup(c *gin.Context){
-// 	var body struct{
-// 		FirstName    string
-// 		LastName     string
-// 		Phone		 string
-// 		Email 	     string
-// 		UserType 	 string
-// 		Password     string
-// 	}
-
-// 	if c.Bind(&body) != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"error" : "Failed to read body",
-// 		})
-// 		return
-// 	}
-
-// 	err := CreateUser(body.FirstName,body.LastName,body.Phone,body.Email,body.UserType,body.Password)
-
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest,gin.H{
-// 			"error" : err.Error(),
-// 		})
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, gin.H{})
-// }
-
-// func Login(c *gin.Context){
-// 	var body struct {
-// 		Email 	 string
-// 		Password string
-// 	}
-
-// 	if c.Bind(&body)!=nil{
-// 		c.JSON(http.StatusBadRequest,gin.H{
-// 			"error":"Failed to read body",
-// 		})
-// 		return
-// 	}
-
-// 	user, err := helpers.CheckCredentials(body.Email,body.Password)
-
-// 	if err!=nil {
-// 		c.JSON(http.StatusBadRequest,gin.H{
-// 			"error":"Invalid email or password",
-// 		})
-// 		return
-// 	}
-
-// 	tokenString, err := helpers.GenerateTokens(user)
-
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"error":"Failed to create token",
-// 		})
-// 		return
-// 	}
-
-// 	c.SetSameSite(http.SameSiteLaxMode)
-// 	c.SetCookie("Authorization",tokenString, 3600*24 ,"","",true,true)
-// 	c.JSON(http.StatusOK,gin.H{})
-// }
-
-func Validate(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"test": "test",
 	})
 }
