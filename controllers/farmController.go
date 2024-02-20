@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/oneaushaf/go-broiler/database"
@@ -59,13 +58,13 @@ func GetFarms(c *gin.Context){
 
 
 func GetFarm(c *gin.Context) {
-	farmID, err := strconv.Atoi(c.Param("code"))
-	if err != nil {
+	code := c.Param("code")
+	if code == "" {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 	var Farm models.Farm
-	check := database.DB.First(&Farm, "id=?", farmID)
+	check := database.DB.First(&Farm, "code=?", code)
 	if check.Error != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -73,6 +72,6 @@ func GetFarm(c *gin.Context) {
 		c.AbortWithStatus(http.StatusNotFound)
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"Farm": resources.FarmDefaultResource(Farm),
+		"farm": resources.FarmDefaultResource(Farm),
 	})
 }

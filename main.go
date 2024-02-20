@@ -20,7 +20,9 @@ func main(){
 
 	routes.AuthRoutes(r)
 	routes.UserRoutes(r)
-	routes.Farmroutes(r)
+	routes.FarmRoutes(r)
+	routes.RanchRoutes(r)
+	routes.BatchRoutes(r)
 
 	port := os.Getenv("PORT")
 	r.Run(":"+port)

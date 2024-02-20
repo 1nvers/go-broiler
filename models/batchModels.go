@@ -6,8 +6,8 @@ import (
 
 type Batch struct {
 	gorm.Model
-	Count	  uint
-	Died	  uint
-	Adress 	  string  	
-	RanchID	  uint
+	InitialQty	  uint
+	CurrentQty	  uint
+	Finished      bool  	
+	RanchID	      uint
 }

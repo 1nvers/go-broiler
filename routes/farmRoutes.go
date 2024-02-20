@@ -6,7 +6,7 @@ import (
 	"github.com/oneaushaf/go-broiler/middleware"
 )
 
-func Farmroutes(r *gin.Engine) {
+func FarmRoutes(r *gin.Engine) {
 	r.GET("/farms", middleware.ReuqireAuth ,controllers.GetFarms)
 	r.POST("/farm", middleware.ReuqireAuth ,controllers.CreateFarm)
 	r.GET("/farm/:code", middleware.ReuqireAuth ,controllers.GetFarm)
