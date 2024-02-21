@@ -6,7 +6,7 @@ import (
 
 type Weighing struct {
 	gorm.Model
-	Image   	  string
+	Image         string
 	Age           uint
 	BatchID       uint
 	AverageWeight float64 `gorm:"type:DOUBLE"`

@@ -7,7 +7,7 @@ import (
 )
 
 func UserRoutes(r *gin.Engine) {
-	r.GET("/user/auth",middleware.ReuqireAuth, controllers.GetAuth)
-	r.GET("/user/:id",middleware.ReuqireAuth, controllers.GetUser)
+	r.GET("/users/auth",middleware.ReuqireAuth, controllers.GetAuth)
+	r.GET("/users/:id",middleware.ReuqireAuth, controllers.GetUser)
 	r.GET("/users",middleware.ReuqireAuth, controllers.GetUsers)
 }

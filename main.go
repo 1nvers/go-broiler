@@ -9,13 +9,13 @@ import (
 	"github.com/oneaushaf/go-broiler/routes"
 )
 
-func init(){
+func init() {
 	initializers.LoadEnv()
 	database.ConnectDatabase()
 	database.SyncDatabase()
 }
 
-func main(){
+func main() {
 	r := gin.Default()
 
 	routes.AuthRoutes(r)
@@ -25,5 +25,5 @@ func main(){
 	routes.BatchRoutes(r)
 
 	port := os.Getenv("PORT")
-	r.Run(":"+port)
+	r.Run(":" + port)
 }

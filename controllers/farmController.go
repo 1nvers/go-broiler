@@ -11,13 +11,14 @@ import (
 
 func CreateFarm(c *gin.Context){
 	var body struct{
-		Code    string
-		Adress  string
+		Code    string  `binding:"required"`
+		Adress  string  `binding:"required"`
 	}
 
-	if c.Bind(&body) != nil {
+	if err := c.Bind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error" : "Failed to read body",
+			"error" : "validation error",
+			"details" : err.Error(),
 		})
 		return
 	}
@@ -31,12 +32,14 @@ func CreateFarm(c *gin.Context){
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError,gin.H{
-			"error" : "server error",
+			"error" : result.Error.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"success" : "Farm successfully created",
+	})
 }
 
 func GetFarms(c *gin.Context){
@@ -44,34 +47,40 @@ func GetFarms(c *gin.Context){
 	var result []resources.FarmResource
 	check := database.DB.Find(&farms)
 	if check.Error != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
-	} else if len(farms) == 0 {
-		c.AbortWithStatus(http.StatusNotFound)
-	}
+		c.JSON(http.StatusInternalServerError,gin.H{
+			"error" : check.Error.Error(),
+		})
+	} 
+
 	for _, farm := range farms {
 		result = append(result, resources.FarmDefaultResource(farm))
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"farms": result,
-	})
+
+	c.JSON(http.StatusOK,result)
 }
 
 
 func GetFarm(c *gin.Context) {
 	code := c.Param("code")
 	if code == "" {
-		c.AbortWithStatus(http.StatusInternalServerError)
+		c.JSON(http.StatusBadRequest,gin.H{
+			"error" : "Invalid request",
+		})
 		return
 	}
+
 	var Farm models.Farm
+
 	check := database.DB.First(&Farm, "code=?", code)
 	if check.Error != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError,gin.H{
+			"error" : check.Error.Error(),
+		})
 		return
 	} else if check.RowsAffected == 0 {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.JSON(http.StatusNotFound,gin.H{
+			"error":check.Error.Error(),
+		})
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"farm": resources.FarmDefaultResource(Farm),
-	})
+	c.JSON(http.StatusOK,resources.FarmDefaultResource(Farm))
 }

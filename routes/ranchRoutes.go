@@ -7,7 +7,11 @@ import (
 )
 
 func RanchRoutes(r *gin.Engine) {
+	r.POST("/farms/:farm_code/ranches", middleware.ReuqireAuth, controllers.CreateRanch)
+	r.GET("/farms/:farm_code/ranches", middleware.ReuqireAuth, controllers.GetRanchesByFarm)
 	r.GET("/ranches", middleware.ReuqireAuth, controllers.GetRanches)
-	r.POST("/ranch", middleware.ReuqireAuth, controllers.CreateRanch)
-	r.GET("/ranch/:code", middleware.ReuqireAuth, controllers.GetRanch)
+
+	r.GET("/ranches/:ranch_code", middleware.ReuqireAuth, controllers.GetRanch)
+	r.PUT("/ranches/:ranch_code", middleware.ReuqireAuth, controllers.TempHandler)
+	r.DELETE("/ranches/:ranch_code", middleware.ReuqireAuth, controllers.TempHandler)
 }

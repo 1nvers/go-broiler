@@ -50,6 +50,6 @@ func ValidateToken(tokenString string) (claims *Claims, er error) {
 		err = errors.New("token is expired")
 		return nil, err
 	}
-	err = nil
-	return claims,err
+	
+	return claims,nil
 }

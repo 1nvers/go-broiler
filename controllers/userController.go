@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -16,7 +15,7 @@ func CreateUser(firstName string, lastName string, phone string, email string, u
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 
 	if err != nil {
-		return errors.New("failed to hash password")
+		return err
 	}
 
 	user := models.User{
@@ -30,7 +29,7 @@ func CreateUser(firstName string, lastName string, phone string, email string, u
 	result := database.DB.Create(&user)
 
 	if result.Error != nil {
-		return errors.New("failed to create user")
+		return result.Error
 	}
 	return nil
 }

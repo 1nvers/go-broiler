@@ -9,7 +9,7 @@ type User struct {
 	FirstName string
 	LastName  string
 	Phone     string
-	Email 	  string  `gorm:"unique;not null"`
+	Email     string `gorm:"unique;not null"`
 	Password  string
-	UserType  string	
+	UserType  string
 }

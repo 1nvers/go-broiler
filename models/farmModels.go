@@ -6,7 +6,7 @@ import (
 
 type Farm struct {
 	gorm.Model
-	Code 	  string   `gorm:"unique;not null"`	
-	Adress 	  string  	
-	Ranches   []Ranch
+	Code    string `gorm:"unique;not null"`
+	Adress  string
+	Ranches []Ranch
 }
