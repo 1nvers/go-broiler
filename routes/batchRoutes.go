@@ -11,7 +11,7 @@ func BatchRoutes(r *gin.Engine) {
 	r.GET("/ranches/:ranch_code/batches", middleware.ReuqireAuth, controllers.GetBatchesByRanch)
 	r.GET("/batches", middleware.ReuqireAuth, controllers.GetBatches)
 
-	r.GET("/batches/:batches_id", middleware.ReuqireAuth, controllers.GetBatch)
-	r.PUT("/batches/:batches_id", middleware.ReuqireAuth, controllers.TempHandler)
-	r.DELETE("/batches/:batches_id", middleware.ReuqireAuth, controllers.TempHandler)
+	r.GET("/batches/:batch_id", middleware.ReuqireAuth, controllers.GetBatch)
+	r.PUT("/batches/:batch_id", middleware.ReuqireAuth, controllers.TempHandler)
+	r.DELETE("/batches/:batch_id", middleware.ReuqireAuth, controllers.TempHandler)
 }

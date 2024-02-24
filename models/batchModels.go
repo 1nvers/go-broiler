@@ -10,4 +10,5 @@ type Batch struct {
 	CurrentQty uint
 	Finished   bool
 	RanchID    uint
+	Weighings  []Weighing 
 }

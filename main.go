@@ -18,11 +18,14 @@ func init() {
 func main() {
 	r := gin.Default()
 
+	r.MaxMultipartMemory = 8 << 20  // 8 MiB
+
 	routes.AuthRoutes(r)
 	routes.UserRoutes(r)
 	routes.FarmRoutes(r)
 	routes.RanchRoutes(r)
 	routes.BatchRoutes(r)
+	routes.WeighingRoutes(r)
 
 	port := os.Getenv("PORT")
 	r.Run(":" + port)

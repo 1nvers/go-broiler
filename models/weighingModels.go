@@ -9,5 +9,6 @@ type Weighing struct {
 	Image         string
 	Age           uint
 	BatchID       uint
+	Deceased      uint
 	AverageWeight float64 `gorm:"type:DOUBLE"`
 }
