@@ -2,6 +2,8 @@ package controllers
 
 import (
 	// "crypto/sha256"
+	"bytes"
+	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -14,22 +16,22 @@ import (
 )
 
 func UploadImage(c *gin.Context) {
-	weighingID := c.Param("weighing_id")
-	weighing := models.Weighing{}
-	check := database.DB.First(&weighing, "id=?", weighingID)
-	if check.Error != nil {
-		if errors.Is(check.Error, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": check.Error.Error(),
-			})
-			return
-		} else {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "weighing record not found",
-			})
-			return
-		}
-	}
+	// weighingID := c.Param("weighing_id")
+	// weighing := models.Weighing{}
+	// check := database.DB.First(&weighing, "id=?", weighingID)
+	// if check.Error != nil {
+	// 	if errors.Is(check.Error, gorm.ErrRecordNotFound) {
+	// 		c.JSON(http.StatusInternalServerError, gin.H{
+	// 			"error": check.Error.Error(),
+	// 		})
+	// 		return
+	// 	} else {
+	// 		c.JSON(http.StatusBadRequest, gin.H{
+	// 			"error": "weighing record not found",
+	// 		})
+	// 		return
+	// 	}
+	// }
 
 	file, err := c.FormFile("image")
 	if err != nil {
@@ -44,15 +46,15 @@ func UploadImage(c *gin.Context) {
 	name := helpers.RandString(8)
 	fileName := name + "." + ext
 
-	weighing.Image = fileName
-	check = database.DB.Save(&weighing)
+	// weighing.Image = fileName
+	// check = database.DB.Save(&weighing)
 
-	if check.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+	// if check.Error != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{
+	// 		"error": err.Error(),
+	// 	})
+	// 	return
+	// }
 
 	err = c.SaveUploadedFile(file, "images/weighing/"+fileName)
 	if err != nil {
@@ -71,7 +73,7 @@ func UploadImage(c *gin.Context) {
 
 func CreateWeighing(c *gin.Context) {
 	batch := models.Batch{}
-	batchID := c.Param("batch_code")
+	batchID := c.Param("batch_id")
 	if batchID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "invalid request",
@@ -97,13 +99,40 @@ func CreateWeighing(c *gin.Context) {
 	var body struct {
 		Age      uint `binding:"required"`
 		Deceased uint `binding:"required"`
-		BatchID  uint
+		Image 	 string `binding:"required"`
 	}
 
-	if c.Bind(&body) != nil {
+	if err := c.Bind(&body) ; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "validation error",
+			"error": err.Error(),
 		})
+		return
+	}
+
+	requestData := gin.H{
+		"age": body.Age,
+		"count": (batch.CurrentQty - body.Deceased),
+		"image": body.Image,
+	}
+
+	requestBody, err := json.Marshal(requestData)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal JSON"})
+		return
+	}
+
+	// Create an HTTP POST request to the target API
+	targetURL := "http://127.0.0.1:8000/predict/weight"
+	resp, err := http.Post(targetURL, "application/json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to make POST request"})
+		return
+	}
+	defer resp.Body.Close()
+
+	var responseBody map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&responseBody); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse response body"})
 		return
 	}
 
@@ -123,6 +152,7 @@ func CreateWeighing(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": "weighing successfully created",
+		"data": responseBody,
 	})
 }
 

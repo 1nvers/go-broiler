@@ -10,8 +10,7 @@ func WeighingRoutes(r *gin.Engine) {
 	r.POST("/batch/:batch_id/weighings",middleware.ReuqireAuth, controllers.CreateWeighing)
 	r.GET("/batch/:batch_id/weighings",middleware.ReuqireAuth, controllers.GetWeighingsByFarm)
 	r.GET("/weighings",middleware.ReuqireAuth, controllers.GetWeighings)
-	r.POST("/weighings/:weighing_id/image",middleware.ReuqireAuth, controllers.UploadImage)
-	r.GET("/weighings/:weighing_id/image",middleware.ReuqireAuth, controllers.UploadImage)
+	r.POST("/weighings/image",middleware.ReuqireAuth, controllers.UploadImage)
 	
 	r.GET("/weighings/:weighing_id",middleware.ReuqireAuth, controllers.GetWeighing)
 	r.PUT("/weighings/:weighing_id",middleware.ReuqireAuth, controllers.TempHandler)
